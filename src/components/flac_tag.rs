@@ -206,6 +206,11 @@ impl AudioTagEdit for FlacTag {
     fn track_number(&self) -> Option<u16> {
         if let Some(Ok(n)) = self.get_first("TRACKNUMBER").map(|x| x.parse::<u16>()) {
             Some(n)
+        } else if let Some(Some(Ok(n))) = self
+            .get_first("TRACKNUMBER")
+            .map(|x| x.split('/').next().map(|t| t.parse::<u16>()))
+        {
+            Some(n)
         } else {
             None
         }
