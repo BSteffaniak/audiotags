@@ -1,11 +1,70 @@
 use crate::*;
 use id3::Timestamp;
-use metaflac;
-use std::str::FromStr;
+use metaflac::{self, block::PictureType, BlockType};
+use std::{io::Write, str::FromStr};
 
 pub use metaflac::Tag as FlacInnerTag;
 
-impl_tag!(FlacTag, FlacInnerTag, TagType::Flac);
+#[derive(Default)]
+pub struct NoPicFlacTag {
+    pub inner: FlacInnerTag,
+}
+
+impl<'a> NoPicFlacTag {
+    pub fn read_from_path<P: AsRef<Path>>(path: P) -> metaflac::Result<Self> {
+        Ok(Self {
+            inner: FlacInnerTag::read_from_path(
+                path,
+                Some(&[
+                    BlockType::Padding,
+                    BlockType::VorbisComment,
+                    BlockType::CueSheet,
+                    BlockType::Application,
+                    BlockType::StreamInfo,
+                ]),
+            )?,
+        })
+    }
+
+    pub fn vorbis_comments(&self) -> Option<&metaflac::block::VorbisComment> {
+        self.inner.vorbis_comments()
+    }
+
+    pub fn vorbis_comments_mut(&mut self) -> &mut metaflac::block::VorbisComment {
+        self.inner.vorbis_comments_mut()
+    }
+
+    pub fn get_streaminfo(&self) -> Option<&metaflac::block::StreamInfo> {
+        self.inner.get_streaminfo()
+    }
+
+    pub fn pictures(&'a self) -> impl Iterator<Item = &'a metaflac::block::Picture> + 'a {
+        self.inner.pictures()
+    }
+
+    pub fn add_picture<T: Into<String>>(
+        &mut self,
+        mime_type: T,
+        picture_type: PictureType,
+        data: Vec<u8>,
+    ) {
+        self.inner.add_picture(mime_type, picture_type, data)
+    }
+
+    pub fn remove_picture_type(&mut self, picture_type: PictureType) {
+        self.inner.remove_picture_type(picture_type)
+    }
+
+    pub fn write_to(&mut self, writer: &mut dyn Write) -> metaflac::Result<()> {
+        self.inner.write_to(writer)
+    }
+
+    pub fn write_to_path<P: AsRef<Path>>(&mut self, path: P) -> metaflac::Result<()> {
+        self.inner.write_to_path(path)
+    }
+}
+
+impl_tag!(FlacTag, NoPicFlacTag, TagType::Flac);
 
 impl<'a> From<AnyTag<'a>> for FlacTag {
     fn from(inp: AnyTag<'a>) -> Self {
