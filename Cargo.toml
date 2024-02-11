@@ -1,0 +1,28 @@
+[package]
+name = "audiotags"
+version = "0.5.0"
+authors = ["Tianyi <ShiTianyi2001@outlook.com>", "Pierre de la Martinière <pierre.de.la.martiniere@gmail.com>"]
+edition = "2021"
+description = "Unified IO for different types of audio metadata"
+license = "MIT"
+repository = "https://github.com/TianyiShi2001/audiotags"
+keywords = ["id3", "tag", "tags", "audio", "audiotags"]
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+id3 = "1.1.0"
+mp4ameta = "0.11.0"
+metaflac = { git = "https://github.com/MoosicBox/rust-metaflac.git", branch = "master" }
+thiserror = "1.0.31"
+audiotags-dev-macro = {path = "./audiotags-dev-macro", version = "0.2.0"}
+
+[dev-dependencies]
+tempfile = "3.3.0"
+
+[build-dependencies]
+readme-rustdocifier = "0.1.0"
+
+[features]
+default = ['from']
+from = []
