@@ -10,8 +10,8 @@ fn test_inner() {
 
     let tmp_path = tmp.path();
 
-    let mut innertag = metaflac::Tag::default();
-    let title = "title from metaflac::Tag";
+    let mut innertag = moosicbox_metaflac::Tag::default();
+    let title = "title from moosicbox_metaflac::Tag";
     let artist = "Billy Foo";
     let album_artist = "Billy Foo & The Bars";
     innertag.vorbis_comments_mut().set_title(vec![title]);

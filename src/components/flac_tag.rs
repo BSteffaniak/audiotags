@@ -1,9 +1,9 @@
 use crate::*;
 use id3::Timestamp;
-use metaflac::{self, block::PictureType, BlockType};
+use moosicbox_metaflac::{self, block::PictureType, BlockType};
 use std::{io::Write, str::FromStr};
 
-pub use metaflac::Tag as FlacInnerTag;
+pub use moosicbox_metaflac::Tag as FlacInnerTag;
 
 #[derive(Default)]
 pub struct NoPicFlacTag {
@@ -11,7 +11,7 @@ pub struct NoPicFlacTag {
 }
 
 impl<'a> NoPicFlacTag {
-    pub fn read_from_path<P: AsRef<Path>>(path: P) -> metaflac::Result<Self> {
+    pub fn read_from_path<P: AsRef<Path>>(path: P) -> moosicbox_metaflac::Result<Self> {
         Ok(Self {
             inner: FlacInnerTag::read_from_path(
                 path,
@@ -26,19 +26,19 @@ impl<'a> NoPicFlacTag {
         })
     }
 
-    pub fn vorbis_comments(&self) -> Option<&metaflac::block::VorbisComment> {
+    pub fn vorbis_comments(&self) -> Option<&moosicbox_metaflac::block::VorbisComment> {
         self.inner.vorbis_comments()
     }
 
-    pub fn vorbis_comments_mut(&mut self) -> &mut metaflac::block::VorbisComment {
+    pub fn vorbis_comments_mut(&mut self) -> &mut moosicbox_metaflac::block::VorbisComment {
         self.inner.vorbis_comments_mut()
     }
 
-    pub fn get_streaminfo(&self) -> Option<&metaflac::block::StreamInfo> {
+    pub fn get_streaminfo(&self) -> Option<&moosicbox_metaflac::block::StreamInfo> {
         self.inner.get_streaminfo()
     }
 
-    pub fn pictures(&'a self) -> impl Iterator<Item = &'a metaflac::block::Picture> + 'a {
+    pub fn pictures(&'a self) -> impl Iterator<Item = &'a moosicbox_metaflac::block::Picture> + 'a {
         self.inner.pictures()
     }
 
@@ -55,11 +55,11 @@ impl<'a> NoPicFlacTag {
         self.inner.remove_picture_type(picture_type)
     }
 
-    pub fn write_to(&mut self, writer: &mut dyn Write) -> metaflac::Result<()> {
+    pub fn write_to(&mut self, writer: &mut dyn Write) -> moosicbox_metaflac::Result<()> {
         self.inner.write_to(writer)
     }
 
-    pub fn write_to_path<P: AsRef<Path>>(&mut self, path: P) -> metaflac::Result<()> {
+    pub fn write_to_path<P: AsRef<Path>>(&mut self, path: P) -> moosicbox_metaflac::Result<()> {
         self.inner.write_to_path(path)
     }
 }
@@ -232,7 +232,12 @@ impl AudioTagEdit for FlacTag {
     fn album_cover(&self) -> Option<Picture> {
         self.inner
             .pictures()
-            .find(|&pic| matches!(pic.picture_type, metaflac::block::PictureType::CoverFront))
+            .find(|&pic| {
+                matches!(
+                    pic.picture_type,
+                    moosicbox_metaflac::block::PictureType::CoverFront
+                )
+            })
             .and_then(|pic| {
                 Some(Picture {
                     data: &pic.data,
@@ -243,13 +248,13 @@ impl AudioTagEdit for FlacTag {
     fn set_album_cover(&mut self, cover: Picture) {
         self.remove_album_cover();
         let mime = String::from(cover.mime_type);
-        let picture_type = metaflac::block::PictureType::CoverFront;
+        let picture_type = moosicbox_metaflac::block::PictureType::CoverFront;
         self.inner
             .add_picture(mime, picture_type, (cover.data).to_owned());
     }
     fn remove_album_cover(&mut self) {
         self.inner
-            .remove_picture_type(metaflac::block::PictureType::CoverFront)
+            .remove_picture_type(moosicbox_metaflac::block::PictureType::CoverFront)
     }
 
     fn composer(&self) -> Option<&str> {

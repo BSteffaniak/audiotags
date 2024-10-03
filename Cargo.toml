@@ -1,7 +1,11 @@
 [package]
-name = "audiotags"
-version = "0.5.0"
-authors = ["Tianyi <ShiTianyi2001@outlook.com>", "Pierre de la Martinière <pierre.de.la.martiniere@gmail.com>"]
+name = "moosicbox_audiotags"
+version = "0.1.0"
+authors = [
+  "Tianyi <ShiTianyi2001@outlook.com>",
+  "Pierre de la Martinière <pierre.de.la.martiniere@gmail.com>",
+  "Braden Steffaniak"
+]
 edition = "2021"
 description = "Unified IO for different types of audio metadata"
 license = "MIT"
@@ -13,9 +17,9 @@ keywords = ["id3", "tag", "tags", "audio", "audiotags"]
 [dependencies]
 id3 = "1.1.0"
 mp4ameta = "0.11.0"
-metaflac = { git = "https://github.com/MoosicBox/rust-metaflac.git", branch = "master" }
+moosicbox_metaflac = { version = "0.1.0" }
 thiserror = "1.0.31"
-audiotags-dev-macro = {path = "./audiotags-dev-macro", version = "0.2.0"}
+audiotags-dev-macro = { path = "./audiotags-dev-macro", version = "0.2.0" }
 
 [dev-dependencies]
 tempfile = "3.3.0"
